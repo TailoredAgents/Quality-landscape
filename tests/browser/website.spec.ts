@@ -63,6 +63,35 @@ test("all public pages render at desktop, tablet, and phone sizes", async ({
   }
   expect(errors).toEqual([]);
 });
+test("mobile hero stays stable when browser controls change the viewport height", async ({
+  page,
+}) => {
+  for (const width of [375, 390, 430, 700]) {
+    await page.setViewportSize({ width, height: 760 });
+    await page.goto("/", { waitUntil: "networkidle" });
+    const hero = page.locator(".home-hero");
+    const measure = () =>
+      hero.evaluate((element) => ({
+        height: element.getBoundingClientRect().height,
+        nextTop:
+          element.nextElementSibling!.getBoundingClientRect().top +
+          window.scrollY,
+      }));
+    const before = await measure();
+    await page.evaluate(() =>
+      window.scrollTo({ top: 850, behavior: "instant" }),
+    );
+    await page.setViewportSize({ width, height: 890 });
+    const expanded = await measure();
+    expect(expanded.height).toBeCloseTo(before.height, 0);
+    expect(expanded.nextTop).toBeCloseTo(before.nextTop, 0);
+    await page.setViewportSize({ width, height: 700 });
+    const collapsed = await measure();
+    expect(collapsed.height).toBeCloseTo(before.height, 0);
+    expect(collapsed.nextTop).toBeCloseTo(before.nextTop, 0);
+  }
+});
+
 test("mobile menu navigates and closes accessibly", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 850 });
   await page.goto("/");

@@ -20,6 +20,12 @@ The page transfer fell about 46%, image transfer about 75%, and JavaScript trans
 
 The separate initial hosted run scored 87 for performance, 100 for best practices, and 69 for SEO, with LCP 3.7 s, TBT 30 ms, and CLS 0. Its canonical URL incorrectly pointed to `http://localhost:3107`. It also emitted noindex in both HTML and HTTP headers, blocked crawlers in robots.txt, and supplied an empty sitemap. The crawl block is intentional until launch, and remains enabled; it explains the SEO score, which should not be presented as a ranking score.
 
+After Render deployed `f1503e8`, the hosted mobile test scored **94 for performance**, with **2.6 s LCP**, **20 ms TBT**, **0 CLS**, and **338 KiB transferred**, versus 640 KiB before. The public canonical URL now correctly points to the Render origin. The six-page SEO audit also passed on the live address. Indexing remains disabled, so the SEO category is still 69. These are individual simulated runs; they do not establish real-user performance.
+
+## Mobile scrolling correction
+
+The owner reported the home-page hero extending when scrolling on mobile. This was reproduced at 390 px width: increasing viewport height from 760 to 890 px grew the hero from 684 to 814 px and moved the following section by 130 px. Mobile sizing now follows its content and fixed spacing rather than viewport height. A regression check at 375, 390, 430, and 700 px verifies the hero and following section stay at the same document positions when viewport height expands and contracts while scrolled.
+
 ## Implemented
 
 - AVIF image delivery with WebP fallback, smaller thumbnail requests that match the actual columns, quality 60 for page images, and a one-day minimum derivative cache. Detailed lightbox images retain quality 75. Replace photographs using new filenames to avoid stale image-cache entries.
@@ -31,7 +37,7 @@ The separate initial hosted run scored 87 for performance, 100 for best practice
 - A repeatable audit verifies that six public pages return 200, render one H1 without JavaScript, include titles/descriptions/correct canonical URLs/image alt attributes, and keep the private login excluded from search.
 - The dashboard regression test now checks persisted real metrics rather than assuming its real database is empty. No existing records were deleted.
 
-Validation: production build, ESLint, ten unit tests, eight Playwright tests including accessibility checks, and the six-page server-rendered SEO audit pass.
+Validation: production build, ESLint, ten unit tests, nine Playwright tests including mobile viewport stability and accessibility checks, and the six-page server-rendered SEO audit pass.
 
 ## Launch and ongoing work
 

@@ -1988,9 +1988,13 @@ img {
     color: var(--muted);
   }
   .home-hero {
-    height: calc(100svh - 76px);
+    height: auto;
     min-height: 680px;
-    max-height: 850px;
+    max-height: none;
+  }
+  .hero-content {
+    height: auto;
+    padding-block: 64px 104px;
   }
   .hero-image {
     object-position: 58% center;
@@ -2001,8 +2005,7 @@ img {
       linear-gradient(0deg, #10291ddc, transparent 45%);
   }
   .hero-copy {
-    padding-bottom: 90px;
-    padding-top: 5px;
+    padding: 0;
   }
   .hero-copy .eyebrow {
     max-width: 310px;
