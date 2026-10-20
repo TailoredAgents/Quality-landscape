@@ -193,9 +193,18 @@ test("private dashboard sample controls, statuses, export, and logout", async ({
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toContain("SAMPLE");
   await page.getByRole("button", { name: "Overview", exact: true }).click();
+  const realDataResponse = page.waitForResponse((response) =>
+    response.url().includes("/api/admin/dashboard?mode=real&days=90"),
+  );
   await page.getByRole("button", { name: "View real data" }).click();
-  await expect(page.getByText("A fresh start, ready to grow.")).toBeVisible();
-  await expect(page.locator(".kpi-card").first()).toContainText("0");
+  const realData = await (await realDataResponse).json();
+  expect(realData.sample).toBe(false);
+  await expect(
+    page.getByText("Real Data — Website Analytics", { exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".kpi-card").first().locator("strong")).toHaveText(
+    realData.metrics.pageviews.toLocaleString("en-US"),
+  );
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(page).toHaveURL(/\/admin\/login$/);
   await page.goto("/admin");

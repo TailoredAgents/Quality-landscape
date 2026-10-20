@@ -14,6 +14,12 @@ export function pageMetadata(
       previewMode || !business.approvedForLaunch
         ? { index: false, follow: false }
         : { index: true, follow: true },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/images/property.jpg"],
+    },
     openGraph: {
       title,
       description,

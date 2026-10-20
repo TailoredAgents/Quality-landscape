@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/manrope";
-import "@fontsource-variable/fraunces";
+import localFont from "next/font/local";
 import "./globals.css";
 import { siteUrl, previewMode } from "@/lib/config";
 import { business } from "@/lib/business";
+const manrope = localFont({
+  src: "../../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2",
+  variable: "--font-manrope",
+  weight: "200 800",
+  display: "swap",
+  adjustFontFallback: "Arial",
+});
+const fraunces = localFont({
+  src: "../../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2",
+  variable: "--font-fraunces",
+  weight: "100 900",
+  display: "swap",
+  adjustFontFallback: "Times New Roman",
+});
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -24,7 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      className={`${manrope.variable} ${fraunces.variable}`}
+    >
       <body>{children}</body>
     </html>
   );

@@ -1,7 +1,7 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/public-shell";
 import { AnalyticsConsent } from "@/components/analytics-consent";
-import { previewMode } from "@/lib/config";
+import { previewMode, siteUrl } from "@/lib/config";
 import { business } from "@/lib/business";
 export default function PublicLayout({
   children,
@@ -24,6 +24,9 @@ export default function PublicLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
+              "@id": `${siteUrl}/#business`,
+              url: siteUrl,
+              logo: `${siteUrl}/brand/grass-q.svg`,
               name: business.name,
               address: {
                 "@type": "PostalAddress",

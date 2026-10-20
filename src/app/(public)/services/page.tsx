@@ -10,7 +10,7 @@ import {
 import { services } from "@/lib/business";
 import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata(
-  "Lawn & Property Care Services",
+  "Lawn Care & Landscaping Services in Vidalia, GA",
   "Explore lawn maintenance, trimming, edging, irrigation-related services, and general property care in Vidalia, Georgia.",
   "/services",
 );

@@ -32,7 +32,15 @@ export function Photo({
 }) {
   return (
     <div className={`photo ${className}`}>
-      <Image src={src} alt={alt} fill sizes={sizes} priority={priority} />
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        quality={60}
+        loading={priority ? "eager" : "lazy"}
+        fetchPriority={priority ? "high" : undefined}
+      />
     </div>
   );
 }
@@ -58,6 +66,7 @@ export function ClosingCTA() {
         alt="Green lawn framed by mature trees"
         fill
         sizes="100vw"
+        quality={60}
       />
       <div className="closing-shade" />
       <div className="container closing-content">
@@ -153,7 +162,15 @@ export function PageHero({
 }) {
   return (
     <section className="page-hero">
-      <Image src={image} alt={alt} fill sizes="100vw" priority />
+      <Image
+        src={image}
+        alt={alt}
+        fill
+        sizes="100vw"
+        quality={60}
+        preload
+        fetchPriority="high"
+      />
       <div className="page-hero-shade" />
       <div className="container">
         <SectionLabel light>{label}</SectionLabel>

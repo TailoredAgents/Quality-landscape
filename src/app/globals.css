@@ -3,8 +3,8 @@
   --color-forest: #193d32;
   --color-sage: #a8be91;
   --color-ivory: #f6f4ed;
-  --font-sans: "Manrope Variable", sans-serif;
-  --font-serif: "Fraunces Variable", Georgia, serif;
+  --font-sans: var(--font-manrope), sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
 }
 :root {
   --forest: #193d32;
@@ -14,8 +14,8 @@
   --ink: #232c27;
   --muted: #5b675e;
   --line: #dcded3;
-  --serif: "Fraunces Variable", Georgia, serif;
-  --sans: "Manrope Variable", sans-serif;
+  --serif: var(--font-fraunces), Georgia, serif;
+  --sans: var(--font-manrope), sans-serif;
 }
 * {
   box-sizing: border-box;

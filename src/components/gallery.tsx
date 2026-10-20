@@ -74,10 +74,13 @@ export function Gallery({ featured = false }: { featured?: boolean }) {
               src={g.src}
               alt={g.alt}
               fill
+              quality={60}
               sizes={
                 featured
-                  ? "(max-width: 768px) 100vw, 50vw"
-                  : "(max-width: 768px) 100vw, 50vw"
+                  ? i === 0
+                    ? "(max-width: 700px) 90vw, 55vw"
+                    : "(max-width: 700px) 45vw, 35vw"
+                  : "(max-width: 700px) 90vw, 45vw"
               }
             />
             <span className="gallery-overlay">

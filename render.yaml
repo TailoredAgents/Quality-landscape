@@ -25,7 +25,7 @@ services:
       - key: ADMIN_PASSWORD_HASH
         sync: false
       - key: NEXT_PUBLIC_SITE_URL
-        sync: false
+        value: https://quality-landscape.onrender.com
       - key: TRUST_PROXY
         value: "true"
       - key: ANALYTICS_RETENTION_DAYS

@@ -4,6 +4,11 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   serverExternalPackages: ["pg", "@electric-sql/pglite", "bcryptjs"],
   poweredByHeader: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    qualities: [60, 75],
+    minimumCacheTTL: 86400,
+  },
   async headers() {
     return [
       {

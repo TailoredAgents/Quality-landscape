@@ -34,7 +34,9 @@ export default function Home() {
           alt="Green lawn and landscaped residential property framed by trees"
           fill
           sizes="100vw"
-          priority
+          quality={60}
+          preload
+          fetchPriority="high"
         />
         <div className="hero-shade" />
         <div className="container hero-content">
@@ -158,7 +160,8 @@ export default function Home() {
                     src={s.image}
                     alt={s.alt}
                     fill
-                    sizes="(max-width: 600px) 90vw, (max-width: 1000px) 45vw, 23vw"
+                    sizes="(max-width: 900px) 45vw, 23vw"
+                    quality={60}
                   />
                   <span>0{i + 1}</span>
                 </div>

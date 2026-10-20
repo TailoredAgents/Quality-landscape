@@ -39,8 +39,8 @@ All displayed sample customer names, phone numbers, email addresses, traffic, an
 ## Stack and structure
 
 - Next.js App Router, TypeScript, React, Tailwind CSS 4, custom responsive CSS.
-- Locally bundled Manrope and Fraunces variable fonts; no runtime Google Fonts request.
-- Lucide icons, restrained Motion reveals with reduced-motion support, Recharts analytics.
+- Locally bundled, preloaded Manrope and Fraunces variable fonts with adjusted fallback metrics; no runtime Google Fonts request.
+- Lucide icons, lightweight native browser reveals with reduced-motion support, Recharts analytics isolated to the private dashboard.
 - PostgreSQL through `pg` and parameterized SQL. No production JSON or browser database storage.
 - bcryptjs password hashing, Node's cryptographic random tokens and HMAC primitives, server-side database sessions.
 - Zod server validation, origin checks, bounded request bodies, honeypot protection, and database-backed rate limits.
@@ -99,7 +99,7 @@ See `.env.example`. The local real secrets are intentionally absent from this gu
 | Variable | Purpose |
 | --- | --- |
 | `PREVIEW_MODE` | Defaults to `true`. Only the exact string `false` enables live inquiry/traffic storage. Rebuild public pages when changing it. |
-| `NEXT_PUBLIC_SITE_URL` | Full canonical origin, including protocol and local port if applicable. Set before build. |
+| `NEXT_PUBLIC_SITE_URL` | Public canonical origin. Blueprint currently uses `https://quality-landscape.onrender.com`; replace it with the final custom domain before rebuilding. Render's public origin is used as fallback, and localhost values are rejected on Render. |
 | `SITE_URL` | Optional server origin override for integration tests; normally leave unset or match the public origin exactly. |
 | `DATABASE_URL` | PostgreSQL connection string; required in every deployed environment. |
 | `DATABASE_SSL` | Set `true` for a database requiring verified TLS. Render's internal connection does not require this flag. Certificate verification is never disabled. |
@@ -174,6 +174,8 @@ Obtain and enter the following owner-approved information:
 The preview is intentionally distinguishable from the official business site. Final content review and the real email delivery test remain necessary before launch.
 
 ## Checks and evidence
+
+See [the loading speed and SEO audit](qa/SPEED-SEO.md) for measurements, implemented optimizations, and the custom-domain/indexing launch steps. Run `npm run audit:seo -- https://quality-landscape.onrender.com` after deployment to check the hosted metadata without submitting forms or collecting customer data.
 
 ```powershell
 npm run typecheck

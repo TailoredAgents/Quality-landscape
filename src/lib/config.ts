@@ -1,5 +1,4 @@
+import { resolveSiteUrl } from "./site-url";
+
 export const previewMode = process.env.PREVIEW_MODE !== "false";
-export const siteUrl =
-  process.env.SITE_URL ||
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  "http://localhost:3107";
+export const siteUrl = resolveSiteUrl(process.env);
