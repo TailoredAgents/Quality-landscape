@@ -280,10 +280,16 @@ img {
 .brand-light {
   color: var(--ivory);
 }
+.mobile-call {
+  display: none;
+}
 .brand.brand-integrated {
   --brand-size: 29px;
   display: inline-grid;
   grid-template-columns: auto auto;
+  justify-content: start;
+  width: max-content;
+  max-width: 100%;
   gap: 5px 0;
   font-size: var(--brand-size);
 }
@@ -2828,5 +2834,217 @@ img {
   }
   .service-intro .intro-split h2 {
     font-size: 36px;
+  }
+}
+
+/* Phone review: readable copy, generous touch targets, and a direct estimate flow. */
+@media (max-width: 700px) {
+  .header-inner {
+    gap: 6px;
+  }
+  .header-inner > .brand {
+    margin-right: auto;
+    min-height: 44px;
+  }
+  .header-inner > .brand-integrated {
+    --brand-size: 27px;
+  }
+  .mobile-call {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--forest);
+  }
+  .menu-toggle {
+    margin-right: -6px;
+  }
+  .eyebrow,
+  .hero-copy .eyebrow,
+  .closing-content .eyebrow,
+  .why-grid > div > p.eyebrow,
+  .prose > p.eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    line-height: 1.65;
+  }
+  .hero-copy .eyebrow {
+    max-width: 350px;
+  }
+  .hero-copy > p,
+  .page-hero p:not(.eyebrow),
+  .promise-copy > p,
+  .intro-split > div > p,
+  .section-heading > div > p:not(.eyebrow),
+  .section-heading > p,
+  .why-grid > div > p:not(.eyebrow),
+  .value-list p,
+  .process-grid p,
+  .service-detail > div > p:not(.eyebrow),
+  .about-philosophy p:not(.eyebrow),
+  .owner-story > p:not(.eyebrow),
+  .contact-heading > p:not(.eyebrow),
+  .prose > p:not(.eyebrow) {
+    font-size: 15px;
+    line-height: 1.8;
+  }
+  .hero-copy > p {
+    max-width: 350px;
+  }
+  .button,
+  .hero-copy .button,
+  .service-detail .button {
+    font-size: 14px;
+    min-height: 52px;
+  }
+  .hero-copy .button-row {
+    align-items: stretch;
+  }
+  .hero-copy .button-outline {
+    justify-content: flex-start;
+    min-height: 44px;
+  }
+  .text-link,
+  .call-link {
+    min-height: 44px;
+    font-size: 14px;
+  }
+  .hero-bottom > a {
+    min-height: 44px;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+  .trust-strip .container > div {
+    font-size: 10px;
+  }
+  .service-card > p,
+  .service-detail li,
+  .faq-grid summary,
+  .faq-grid details > p {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+  .service-jump > a {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .gallery-caption > p,
+  .fine-print,
+  .lightbox-note,
+  .lightbox-controls p {
+    font-size: 12px;
+  }
+  .gallery-overlay small,
+  .gallery-featured .gallery-item:not(:first-child) .gallery-overlay small,
+  .gallery-caption > span,
+  .work-note > span,
+  .image-caption,
+  .image-caption > span:first-child {
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .gallery-toolbar,
+  .filter-tabs {
+    width: 100%;
+  }
+  .filter-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .filter-tabs button {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .lightbox-controls > button,
+  .lightbox-close {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .lightbox[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .lightbox-image {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+  .page-hero {
+    height: auto;
+    min-height: 440px;
+    padding-block: 56px;
+  }
+  .footer-brand > p,
+  .footer-top > div:not(:first-child) > a,
+  .contact-details p,
+  .contact-details a {
+    font-size: 14px;
+  }
+  .footer-top h3,
+  .location {
+    font-size: 12px;
+  }
+  .footer-top > div:not(:first-child) > a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin-block: 0;
+  }
+  .footer-bottom {
+    font-size: 11px;
+    gap: 12px;
+  }
+  .footer-bottom > div {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+  .footer-bottom a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .footer-preview,
+  .contact-details small {
+    font-size: 12px;
+  }
+  .contact-layout > .quote-panel {
+    order: 0;
+    scroll-margin-top: 96px;
+  }
+  .contact-layout .contact-details {
+    order: 1;
+  }
+  .contact-layout > aside > .photo {
+    order: 2;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .field > span {
+    font-size: 14px;
+  }
+  .field-error,
+  .check-label {
+    font-size: 13px;
+    line-height: 1.75;
+  }
+  .check-label input {
+    width: 22px;
+    height: 22px;
+  }
+  .form-footnote {
+    font-size: 12px;
+  }
+  .contact-next > span {
+    font-size: 10px;
+  }
+  .privacy-preferences p {
+    font-size: 14px;
   }
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { cloneElement, useEffect, useId, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpRight, CheckCircle2, LoaderCircle } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +13,17 @@ export function QuoteForm() {
   const [error, setError] = useState("");
   const [fields, setFields] = useState<Record<string, string[]>>({});
   const form = useRef<HTMLFormElement>(null);
+  const success = useRef<HTMLDivElement>(null);
+  const failure = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (state === "success") success.current?.focus();
+    if (state === "error") {
+      const invalid = form.current?.querySelector<HTMLElement>(
+        '[aria-invalid="true"]',
+      );
+      (invalid || failure.current)?.focus();
+    }
+  }, [state, fields]);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setState("loading");
@@ -44,7 +55,7 @@ export function QuoteForm() {
   }
   if (state === "success")
     return (
-      <div className="form-success" role="status" tabIndex={-1}>
+      <div ref={success} className="form-success" role="status" tabIndex={-1}>
         <CheckCircle2 size={48} strokeWidth={1.3} />
         <SectionTitle title="Your request is received." />
         <p>
@@ -58,7 +69,7 @@ export function QuoteForm() {
             form.current?.reset();
           }}
         >
-          Try another request <ArrowUpRight size={18} />
+          Send another request <ArrowUpRight size={18} />
         </button>
       </div>
     );
@@ -167,7 +178,7 @@ export function QuoteForm() {
           </span>
         </label>
         {error && (
-          <p className="form-error" role="alert">
+          <p ref={failure} className="form-error" role="alert" tabIndex={-1}>
             {error}
           </p>
         )}
@@ -197,16 +208,29 @@ function Field({
   error,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: React.ReactElement<{
+    id?: string;
+    "aria-describedby"?: string;
+    "aria-labelledby"?: string;
+  }>;
   error?: string;
 }) {
+  const id = useId();
   return (
-    <label className="field">
-      <span>
+    <label className="field" htmlFor={id}>
+      <span id={`${id}-label`}>
         {label} <small>*</small>
       </span>
-      {children}
-      {error && <small className="field-error">{error}</small>}
+      {cloneElement(children, {
+        id,
+        "aria-labelledby": `${id}-label`,
+        "aria-describedby": error ? `${id}-error` : undefined,
+      })}
+      {error && (
+        <small id={`${id}-error`} className="field-error">
+          {error}
+        </small>
+      )}
     </label>
   );
 }

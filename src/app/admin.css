@@ -1970,3 +1970,87 @@
     font-size: 0;
   }
 }
+
+@media (max-width: 700px) {
+  .login-visual p:not(.eyebrow),
+  .login-content > div > p:not(.eyebrow) {
+    font-size: 14px;
+  }
+  .login-help,
+  .login-security {
+    font-size: 12px;
+  }
+  .login-form .field > span {
+    font-size: 14px;
+  }
+  .admin-sidebar nav > button {
+    font-size: 11px;
+    padding-inline: 6px;
+    gap: 5px;
+    white-space: normal;
+    line-height: 1.4;
+  }
+  .sidebar-bottom > a,
+  .sidebar-bottom > button,
+  .admin-icon-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  .dashboard-heading > div > p:last-child {
+    font-size: 13px;
+  }
+  .sample-banner strong,
+  .panel-heading h2 {
+    font-size: 14px;
+  }
+  .sample-banner small,
+  .sample-banner > button,
+  .range-control button,
+  .panel-heading p,
+  .panel-note,
+  .chart-foot,
+  .breakdown-list > div > div:first-child,
+  .breakdown-list strong,
+  .page-table strong,
+  .page-table b,
+  .kpi-card > div,
+  .dashboard-methodology,
+  .inquiry-table th,
+  .inquiry-table td,
+  .inquiry-dialog dt {
+    font-size: 12px;
+  }
+  .sample-banner > button,
+  .range-control button,
+  .panel-action,
+  .inquiry-filters > .button {
+    min-height: 44px;
+  }
+  .range-control button {
+    padding-inline: 10px;
+  }
+  .kpi-card > small,
+  .breakdown-list small,
+  .page-table small,
+  .inquiry-table td small,
+  .status-badge,
+  .admin-footer {
+    font-size: 11px;
+  }
+  .inquiry-table td strong,
+  .inquiry-summary > p,
+  .inquiry-summary span {
+    font-size: 13px;
+  }
+  .inquiry-dialog dd,
+  .insight-card > p {
+    font-size: 14px;
+  }
+  .search-input input,
+  .inquiry-filters > select {
+    font-size: 16px;
+  }
+  .inquiry-filters > .button {
+    font-size: 12px;
+  }
+}

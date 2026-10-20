@@ -53,7 +53,7 @@ export default function Contact() {
             </div>
           </div>
         </aside>
-        <div className="quote-panel">
+        <div className="quote-panel" id="estimate-form">
           <Suspense fallback={<p>Loading estimate form…</p>}>
             <QuoteForm />
           </Suspense>

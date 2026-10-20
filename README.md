@@ -1,8 +1,8 @@
 # Quality Landscape & More
 
-A complete Next.js website and private business dashboard for Quality Landscape & More. It has **not been deployed to Render**.
+A complete Next.js website and private business dashboard for Quality Landscape & More, deployed at **https://quality-landscape.onrender.com**.
 
-**Public presentation update:** Concept/mock-site messaging and placeholder sections have been removed from the public website. This local installation now uses `PREVIEW_MODE=false`, so estimate submissions save genuine inquiries to PostgreSQL. Email notifications remain unconfigured. Private sample analytics remain explicitly labeled and available through `ALLOW_SAMPLE_DATA=true`. Search indexing remains blocked until the separate business launch approval flag is enabled. This does not publish or deploy the site.
+**Client presentation configuration:** The local installation and Render Blueprint use `PREVIEW_MODE=false`, so valid estimate submissions save genuine inquiries to PostgreSQL. Private sample analytics remain explicitly labeled and available through `ALLOW_SAMPLE_DATA=true`. The presentation can demonstrate both illustrative analytics and actual saved requests. Email notifications remain unconfigured. Search indexing stays blocked until the separate business launch approval flag is enabled. The public website contains no concept/mock-site banners.
 
 ## Review this installation
 
@@ -32,7 +32,7 @@ The final review uses the faster optimized presentation server on port 3107. To 
 5. On Contact, show the working estimate form. Submitting it now creates a genuine database inquiry; avoid entering fictional customer details in the business database. Automated form testing uses an intercepted response and the separate QA database instead.
 6. Open `/admin/login` and sign in using the private local credential file. The dashboard initially displays **Sample Data — Illustrative Dashboard Preview**.
 7. Change the date range, inspect traffic, open an inquiry, demonstrate a sample status change, and export the sample CSV.
-8. Select **View real data** to show the empty real dashboard and explain the separation. Switch back to sample mode for the presentation. Sign out when finished.
+8. Select **View real data** to show persisted traffic and inquiries and explain the separation. Use your own contact information if demonstrating a real estimate submission; review that request in real mode. Switch back to sample mode for illustrative charts. Sign out when finished.
 
 All displayed sample customer names, phone numbers, email addresses, traffic, and charts are fictional. Sample status changes live only in React state and reset on data reload. CSV downloads are labeled `SAMPLE`.
 
@@ -147,13 +147,13 @@ This removes expired analytics and inquiries according to the configured day lim
 
 ## Render deployment
 
-Prepared using the official [Next.js deployment guidance](https://render.com/docs/deploy-nextjs-app) and [Blueprint specification](https://render.com/docs/blueprint-spec). No hosting resources have been purchased or deployed.
+Configured using the official [Next.js deployment guidance](https://render.com/docs/deploy-nextjs-app) and [Blueprint specification](https://render.com/docs/blueprint-spec). The public Render deployment is https://quality-landscape.onrender.com; the custom domain and verified email sender remain to be configured.
 
 1. Put the source in a private repository. Exclude `.env.local`, `.data`, `node_modules`, and build/test output. Verify ignored paths before the first push.
 2. Create a Render Blueprint from `render.yaml`. It explicitly selects one paid `0.5c-512mb` Node service ($7/month, formerly Starter) and a `0.1c-256mb` managed PostgreSQL 16 instance ($6/month). Base compute totals $13/month, with database storage and any applicable usage charges additional. Prices checked October 20, 2026 against [Render pricing](https://render.com/pricing). Keep both resources in the same region.
 3. Enter private admin email/hash and the exact HTTPS site origin when prompted. Render generates a fresh session secret. The database uses its private internal connection. Public database access is disabled by the empty IP allowlist.
 4. The build runs `npm ci && npm run build`; pre-deploy runs `npm run db:migrate`; startup runs `npm start`, using Render's `PORT`. `/api/health` is a lightweight application-process health check, not a database-readiness check.
-5. Leave `PREVIEW_MODE=true` for the owner presentation. Do not put secrets in source or public `NEXT_PUBLIC_` variables.
+5. The Blueprint uses `PREVIEW_MODE=false` for working inquiry storage and `ALLOW_SAMPLE_DATA=true` for the authenticated presentation dashboard. Indexing remains off through the business launch flag. Do not put secrets in source or public `NEXT_PUBLIC_` variables.
 6. Verify HTTPS, correct origin checks, admin sign-in and logout, database connectivity, and the real empty dashboard on the hosted preview.
 7. Configure automatic database backups and monitoring appropriate to the chosen plan. Add the daily retention command. Scale the small database if real load requires it.
 

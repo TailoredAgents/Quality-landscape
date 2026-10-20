@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X, Phone } from "lucide-react";
 import { Brand } from "./brand";
 import { business } from "@/lib/business";
@@ -15,19 +15,32 @@ const links = [
 export function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const header = useRef<HTMLElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!open) return;
     const close = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggle.current?.focus();
+      }
+    };
+    const outside = (e: PointerEvent) => {
+      if (e.target instanceof Node && !header.current?.contains(e.target))
+        setOpen(false);
     };
     document.addEventListener("keydown", close);
-    return () => document.removeEventListener("keydown", close);
+    document.addEventListener("pointerdown", outside);
+    return () => {
+      document.removeEventListener("keydown", close);
+      document.removeEventListener("pointerdown", outside);
+    };
   }, [open]);
   return (
     <>
-      <header className="site-header">
+      <header ref={header} className="site-header">
         <div className="header-inner">
-          <Brand />
+          <Brand onClick={() => setOpen(false)} />
           <nav className="desktop-nav" aria-label="Main navigation">
             {links.map(([href, label]) => (
               <Link
@@ -43,7 +56,15 @@ export function Header() {
           <Link className="button header-cta" href="/contact">
             Request an Estimate <ArrowUpRight size={17} />
           </Link>
+          <a
+            className="mobile-call"
+            href={business.phoneHref}
+            aria-label={`Call Quality Landscape & More at ${business.phone}`}
+          >
+            <Phone size={19} />
+          </a>
           <button
+            ref={toggle}
             className="menu-toggle"
             onClick={() => setOpen(!open)}
             aria-expanded={open}

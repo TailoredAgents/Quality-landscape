@@ -108,15 +108,37 @@ test("mobile menu navigates and closes accessibly", async ({ page }) => {
   await page.getByRole("button", { name: "Open menu" }).click();
   await page.keyboard.press("Escape");
   await expect(page.locator("#mobile-menu")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open menu" })).toBeFocused();
+  await expect(
+    page.getByRole("link", { name: /^Call Quality Landscape/ }),
+  ).toHaveAttribute("href", "tel:+19125853450");
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await page.mouse.click(20, 820);
+  await expect(page.locator("#mobile-menu")).toHaveCount(0);
+  await page.getByRole("button", { name: "Open menu" }).click();
+  await page
+    .getByRole("link", { name: "Quality Landscape & More home" })
+    .first()
+    .click();
+  await expect(page.locator("#mobile-menu")).toHaveCount(0);
 });
 test("gallery filters and lightbox work with keys and touch buttons", async ({
   page,
 }) => {
+  await page.setViewportSize({ width: 320, height: 700 });
   await page.goto("/our-work");
   await page.getByRole("button", { name: "Details", exact: true }).click();
   await expect(page.locator(".gallery-item")).toHaveCount(2);
   await page.locator(".gallery-item").first().click();
   await expect(page.locator("dialog")).toBeVisible();
+  for (const name of ["Close photo", "Previous photo", "Next photo"]) {
+    const button = page.getByRole("button", { name });
+    await expect(button).toBeVisible();
+    const bounds = await button.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.y).toBeGreaterThanOrEqual(0);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(700);
+  }
   await expect(page.locator(".lightbox-controls")).toContainText("1 / 2");
   await page.keyboard.press("ArrowRight");
   await expect(page.locator(".lightbox-controls")).toContainText("2 / 2");
@@ -169,6 +191,52 @@ test("estimate form validates and confirms a saved inquiry", async ({
   await expect(
     page.getByText("Your inquiry has been saved", { exact: false }),
   ).toBeVisible();
+  await expect(page.locator(".form-success")).toBeFocused();
+});
+
+test("mobile estimate errors keep entered details and focus accessible feedback", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/contact?service=Lawn%20Maintenance");
+  await page.getByLabel("Full name").fill("Browser review");
+  await page.getByLabel("Phone number").fill("(912) 555-0100");
+  await page.getByLabel("Email address").fill("browser-test@example.com");
+  await page.getByLabel("Property location").fill("Example property, Vidalia");
+  await page
+    .getByLabel("Tell us about your property")
+    .fill("Reviewing the mobile form without saving a fictional inquiry.");
+  await page.getByRole("checkbox").check();
+  let serverError = false;
+  await page.route("**/api/quotes", (route) =>
+    route.fulfill({
+      status: serverError ? 503 : 400,
+      contentType: "application/json",
+      body: JSON.stringify(
+        serverError
+          ? { error: "Please try again in a moment." }
+          : {
+              error: "Please check the highlighted fields.",
+              fields: { phone: ["Please check this phone number."] },
+            },
+      ),
+    }),
+  );
+  await page
+    .locator("form")
+    .getByRole("button", { name: "Request an Estimate" })
+    .click();
+  await expect(page.getByLabel("Phone number")).toBeFocused();
+  await expect(page.getByLabel("Phone number")).toHaveAccessibleDescription(
+    "Please check this phone number.",
+  );
+  serverError = true;
+  await page
+    .locator("form")
+    .getByRole("button", { name: "Request an Estimate" })
+    .click();
+  await expect(page.locator("form").getByRole("alert")).toBeFocused();
+  await expect(page.getByLabel("Full name")).toHaveValue("Browser review");
 });
 test("protected admin routes deny anonymous access", async ({
   page,

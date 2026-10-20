@@ -31,11 +31,18 @@ export function LandscapeMark({ className = "" }: { className?: string }) {
     </svg>
   );
 }
-export function Brand({ light = false }: { light?: boolean }) {
+export function Brand({
+  light = false,
+  onClick,
+}: {
+  light?: boolean;
+  onClick?: () => void;
+}) {
   return (
     <Link
       href="/"
       aria-label="Quality Landscape & More home"
+      onClick={onClick}
       className={`brand ${logoStyle === "grass-q" ? "brand-integrated" : ""} ${light ? "brand-light" : ""}`}
     >
       <BrandMark />
