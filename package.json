@@ -1,0 +1,49 @@
+{
+  "name": "quality-landscape-more",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node node_modules/next/dist/bin/next dev --webpack --hostname 0.0.0.0 --port 3107",
+    "build": "node node_modules/next/dist/bin/next build --webpack",
+    "start": "node node_modules/next/dist/bin/next start --hostname 0.0.0.0",
+    "lint": "node node_modules/eslint/bin/eslint.js .",
+    "typecheck": "node node_modules/typescript/bin/tsc --noEmit",
+    "db:migrate": "node node_modules/tsx/dist/cli.mjs scripts/migrate.ts",
+    "admin:setup": "node scripts/setup-admin.mjs",
+    "db:prune": "node node_modules/tsx/dist/cli.mjs scripts/prune.ts",
+    "test": "node node_modules/tsx/dist/cli.mjs --test tests/*.test.ts",
+    "test:browser": "node node_modules/playwright/cli.js test",
+    "test:backend": "node node_modules/tsx/dist/cli.mjs scripts/test-backend.ts"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.10",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.8",
+    "lucide-react": "^1.60.0",
+    "motion": "^14.4.0",
+    "next": "^16.4.2",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "recharts": "^3.10.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.2",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3"
+  }
+}

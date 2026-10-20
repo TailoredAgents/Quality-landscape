@@ -1,0 +1,34 @@
+[
+  {
+    "path": "/",
+    "violations": []
+  },
+  {
+    "path": "/services",
+    "violations": []
+  },
+  {
+    "path": "/our-work",
+    "violations": []
+  },
+  {
+    "path": "/about",
+    "violations": []
+  },
+  {
+    "path": "/contact",
+    "violations": []
+  },
+  {
+    "path": "/privacy",
+    "violations": []
+  },
+  {
+    "path": "/admin/login",
+    "violations": []
+  },
+  {
+    "path": "/admin",
+    "violations": []
+  }
+]

@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: quality-landscape
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    preDeployCommand: npm run db:migrate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.19.0
+      - key: PREVIEW_MODE
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: quality-landscape-db
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD_HASH
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: TRUST_PROXY
+        value: "true"
+      - key: ANALYTICS_RETENTION_DAYS
+        value: "90"
+      - key: INQUIRY_RETENTION_DAYS
+        value: "365"
+databases:
+  - name: quality-landscape-db
+    plan: 0.1c-256mb
+    postgresMajorVersion: "16"
+    databaseName: quality_landscape
+    user: quality_landscape
+    ipAllowList: []
