@@ -2,7 +2,9 @@ services:
   - type: web
     name: quality-landscape
     runtime: node
-    plan: starter
+    # $7/month web compute; PostgreSQL is billed separately.
+    plan: 0.5c-512mb
+    numInstances: 1
     buildCommand: npm ci && npm run build
     preDeployCommand: npm run db:migrate
     startCommand: npm start

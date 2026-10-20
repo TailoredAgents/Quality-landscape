@@ -150,7 +150,7 @@ This removes expired analytics and inquiries according to the configured day lim
 Prepared using the official [Next.js deployment guidance](https://render.com/docs/deploy-nextjs-app) and [Blueprint specification](https://render.com/docs/blueprint-spec). No hosting resources have been purchased or deployed.
 
 1. Put the source in a private repository. Exclude `.env.local`, `.data`, `node_modules`, and build/test output. Verify ignored paths before the first push.
-2. Create a Render Blueprint from `render.yaml`. It defines a paid `starter` Node service and a `0.1c-256mb` managed PostgreSQL 16 instance; review current resource pricing in Render before provisioning. Keep both resources in the same region.
+2. Create a Render Blueprint from `render.yaml`. It explicitly selects one paid `0.5c-512mb` Node service ($7/month, formerly Starter) and a `0.1c-256mb` managed PostgreSQL 16 instance ($6/month). Base compute totals $13/month, with database storage and any applicable usage charges additional. Prices checked October 20, 2026 against [Render pricing](https://render.com/pricing). Keep both resources in the same region.
 3. Enter private admin email/hash and the exact HTTPS site origin when prompted. Render generates a fresh session secret. The database uses its private internal connection. Public database access is disabled by the empty IP allowlist.
 4. The build runs `npm ci && npm run build`; pre-deploy runs `npm run db:migrate`; startup runs `npm start`, using Render's `PORT`. `/api/health` is a lightweight application-process health check, not a database-readiness check.
 5. Leave `PREVIEW_MODE=true` for the owner presentation. Do not put secrets in source or public `NEXT_PUBLIC_` variables.
