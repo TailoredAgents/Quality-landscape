@@ -22,10 +22,8 @@ import {
   LogOut,
   ChevronRight,
   Globe,
-  Users,
-  MousePointer2,
+  FileText,
   Mail,
-  TrendingUp,
   CalendarDays,
   RefreshCw,
   X,
@@ -260,7 +258,7 @@ export function Dashboard({
                 {tab === "overview"
                   ? "Your business, at a glance."
                   : tab === "traffic"
-                    ? "A clearer view of your visitors."
+                    ? "A clearer view of your website activity."
                     : "Every conversation starts here."}
               </h1>
               <p>
@@ -293,7 +291,7 @@ export function Dashboard({
                     ? "Demonstration figures and fictional inquiries. No real business activity is represented."
                     : preview
                       ? "Preview traffic is not collected. This view shows only genuine stored records."
-                      : "Traffic is collected only when visitors allow analytics. Inquiries include all saved submissions."}
+                      : "Basic page counts without visitor identifiers. Privacy settings are respected. Inquiries include all saved submissions."}
                 </small>
               </span>
             </div>
@@ -359,30 +357,25 @@ export function Dashboard({
                         "Pages viewed",
                       ],
                       [
-                        Users,
-                        "Estimated visitors",
-                        format.format(data.metrics.visitors),
-                        "Anonymous visitor estimates",
+                        FileText,
+                        "Active pages",
+                        format.format(data.pages.length),
+                        "Pages with recorded views",
                       ],
                       [
-                        MousePointer2,
-                        "Website visits",
-                        format.format(data.metrics.sessions),
-                        "Browser sessions",
+                        Smartphone,
+                        "Mobile pageviews",
+                        format.format(
+                          data.devices.find((d) => d.name === "mobile")
+                            ?.value || 0,
+                        ),
+                        "Views on phone-sized screens",
                       ],
                       [
                         Mail,
                         "Quote requests",
                         format.format(data.metrics.quotes),
                         "Saved inquiries",
-                      ],
-                      [
-                        TrendingUp,
-                        "Inquiry conversion",
-                        data.metrics.visitors
-                          ? `${data.metrics.conversion.toFixed(1)}%`
-                          : "—",
-                        "Inquiries / estimated visitors",
                       ],
                     ].map(([Icon, label, value, note]) => {
                       const I = Icon as typeof Globe;
@@ -420,13 +413,11 @@ export function Dashboard({
                       <div className="panel-heading">
                         <div>
                           <h2>Website activity</h2>
-                          <p>A daily view of visits to your site.</p>
+                          <p>A daily view of pages viewed on your site.</p>
                         </div>
                         <div className="chart-legend">
                           <span />
                           Pageviews
-                          <span />
-                          Visitors
                         </div>
                       </div>
                       <div className="main-chart">
@@ -499,34 +490,27 @@ export function Dashboard({
                               fill="url(#pageviewFill)"
                               isAnimationActive={false}
                             />
-                            <Area
-                              type="monotone"
-                              dataKey="visitors"
-                              name="Visitors"
-                              stroke="#b5c5a2"
-                              strokeWidth={2}
-                              fill="transparent"
-                              isAnimationActive={false}
-                            />
                           </AreaChart>
                         </ResponsiveContainer>
                       </div>
                       <div className="chart-foot">
                         <span>
-                          Average engaged page time{" "}
-                          <strong>{data.metrics.engagement}s</strong>
+                          <strong>
+                            {format.format(data.metrics.pageviews)}
+                          </strong>{" "}
+                          pageviews in this range
                         </span>
                         <span>
                           {sample
-                            ? "Illustrative engagement"
-                            : "Measured on page visibility changes"}
+                            ? "Illustrative page counts"
+                            : "Page counts, without visitor tracking"}
                         </span>
                       </div>
                     </section>
                     <section className="dashboard-panel source-panel">
                       <div className="panel-heading">
                         <div>
-                          <h2>How visitors find you</h2>
+                          <h2>Traffic sources</h2>
                           <p>Referral share of pageviews</p>
                         </div>
                         <ArrowUpRight size={16} />
@@ -634,26 +618,15 @@ export function Dashboard({
               )}
               {tab === "traffic" && (
                 <>
-                  <div className="dashboard-two-col">
-                    <section className="dashboard-panel">
-                      <div className="panel-heading">
-                        <div>
-                          <h2>Most visited pages</h2>
-                          <p>Total pageviews by public route</p>
-                        </div>
+                  <section className="dashboard-panel">
+                    <div className="panel-heading">
+                      <div>
+                        <h2>Most viewed pages</h2>
+                        <p>Total pageviews by public route</p>
                       </div>
-                      <PageTable values={data.pages} />
-                    </section>
-                    <section className="dashboard-panel">
-                      <div className="panel-heading">
-                        <div>
-                          <h2>Landing pages</h2>
-                          <p>The first page in each recorded session</p>
-                        </div>
-                      </div>
-                      <PageTable values={data.landingPages} />
-                    </section>
-                  </div>
+                    </div>
+                    <PageTable values={data.pages} />
+                  </section>
                   <div className="dashboard-three-col">
                     <section className="dashboard-panel">
                       <div className="panel-heading">
@@ -786,7 +759,7 @@ export function Dashboard({
               <p className="dashboard-methodology">
                 {sample
                   ? "All displayed activity is illustrative. Sample data stays separate from the production database."
-                  : "Visitor and session counts are estimates of consenting browsers, not people. Conversion uses all inquiries / consenting visitor estimates and may exceed 100%. Traffic uses the configured retention window."}{" "}
+                  : "Pageviews count page loads and navigation, including repeat views. Unique visitors, sessions, browsing journeys, and time on page are not measured. Privacy settings and blockers may reduce counts. Inquiries include all saved submissions. Traffic uses the configured retention window."}{" "}
                 · Dates shown in Eastern Time.
               </p>
             </>

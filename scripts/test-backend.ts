@@ -193,10 +193,7 @@ try {
   );
   const event = {
     kind: "pageview",
-    consent: "accepted",
     path: "/",
-    visitor: randomUUID(),
-    session: randomUUID(),
     referrer: "https://www.google.com/search?q=private",
     utmSource: "google",
     utmMedium: "organic",
@@ -204,7 +201,7 @@ try {
     device: "mobile",
   };
   assert.equal(
-    (await call("/api/analytics", "POST", { ...event, consent: undefined }))
+    (await call("/api/analytics", "POST", { ...event, visitor: randomUUID() }))
       .status,
     400,
   );
@@ -235,18 +232,30 @@ try {
   );
   assert.equal((await call("/api/analytics", "POST", event)).status, 204);
   await call("/api/analytics", "POST", { ...event, path: "/services" });
-  await call("/api/analytics", "POST", {
-    ...event,
-    kind: "engagement",
-    duration: 18,
-  });
+  assert.equal(
+    (
+      await call("/api/analytics", "POST", {
+        ...event,
+        kind: "engagement",
+        duration: 18,
+      })
+    ).status,
+    400,
+  );
   const events = (
     await pool.query("SELECT * FROM analytics_events WHERE kind='pageview'")
   ).rows;
   assert.equal(events.length, 2);
   assert.equal(events[0].source, "google.com");
   assert.equal(events[0].utm_campaign, "");
-  assert.ok(events[0].visitor_hash !== event.visitor);
+  assert.ok(
+    events.every(
+      (e) =>
+        e.visitor_hash === null &&
+        e.session_hash === null &&
+        e.duration === null,
+    ),
+  );
   assert.ok(!JSON.stringify(events).includes("qa@example.com"));
   assert.ok(!JSON.stringify(events).includes("q=private"));
   for (const days of [7, 30, 90]) {
@@ -260,10 +269,10 @@ try {
     const data = await r.json();
     assert.equal(data.daily.length, days);
     assert.equal(data.metrics.pageviews, 2);
-    assert.equal(data.metrics.visitors, 1);
-    assert.equal(data.metrics.sessions, 1);
+    assert.deepEqual(Object.keys(data.metrics).sort(), ["pageviews", "quotes"]);
     assert.equal(data.metrics.quotes, 1);
-    assert.equal(data.metrics.engagement, 18);
+    assert.equal(data.devices[0].value, 2);
+    assert.equal(data.landingPages, undefined);
     assert.equal(
       data.daily.reduce(
         (n: number, d: { pageviews: number }) => n + d.pageviews,
@@ -273,7 +282,7 @@ try {
     );
   }
   report.push(
-    "Consented analytics, DNT/GPC suppression, admin-path exclusion, referral sanitization, pseudonymous identifiers, engagement, and accurate 7/30/90-day PostgreSQL aggregation passed.",
+    "Aggregate pageviews without identifiers, rejection of visitor/session/engagement payloads, DNT/GPC suppression, admin-path exclusion, referral sanitization, and accurate 7/30/90-day PostgreSQL aggregation passed.",
   );
   const id = stored.rows[0].id;
   assert.equal(
@@ -381,24 +390,99 @@ try {
       const context = await browser.newContext({
         viewport: { width: 375, height: 900 },
       });
+      await context.addCookies([
+        {
+          name: "quality_session",
+          value: "qa-cookie-not-a-real-session",
+          url: base,
+        },
+      ]);
+      await context.addInitScript(() => {
+        localStorage.setItem("quality-analytics-consent", "accepted");
+        localStorage.setItem("quality-visitor", "legacy-visitor");
+        sessionStorage.setItem("quality-visit", "legacy-session");
+      });
       const page = await context.newPage();
       page.on("pageerror", (e) => errors.push(e.message));
+      const payloads: Record<string, unknown>[] = [];
+      const analyticsRequests: import("@playwright/test").Request[] = [];
+      page.on("request", (r) => {
+        if (r.url().endsWith("/api/analytics")) {
+          payloads.push(r.postDataJSON());
+          analyticsRequests.push(r);
+        }
+      });
       await page.goto(base, { waitUntil: "networkidle" });
-      await expect(
-        page.getByRole("button", { name: "Decline", exact: true }),
-      ).toBeVisible();
-      assert.equal(await pageviewCount(), baseline);
-      await page.getByRole("button", { name: "Decline", exact: true }).click();
-      await page.goto(base + "/services", { waitUntil: "networkidle" });
-      assert.equal(await pageviewCount(), baseline);
-      await page.goto(base + "/privacy");
-      await page
-        .getByRole("button", { name: "Allow analytics", exact: true })
-        .click();
       await expect.poll(pageviewCount).toBe(baseline + 1);
-      await page.goto(base + "/services", { waitUntil: "networkidle" });
+      await expect(
+        page.getByRole("complementary", { name: "Analytics preferences" }),
+      ).toHaveCount(0);
+      assert.deepEqual(
+        await page.evaluate(() => ({
+          local: Object.keys(localStorage),
+          session: Object.keys(sessionStorage),
+        })),
+        { local: [], session: [] },
+      );
+      await page
+        .getByRole("button", { name: "Open menu", exact: true })
+        .click();
+      await page
+        .getByRole("navigation", { name: "Mobile navigation" })
+        .getByRole("link", { name: /Services/ })
+        .click();
+      await expect(page).toHaveURL(base + "/services");
       await expect.poll(pageviewCount).toBe(baseline + 2);
+      await page.goto(base + "/privacy", { waitUntil: "networkidle" });
+      await expect.poll(pageviewCount).toBe(baseline + 3);
+      await page
+        .getByRole("button", { name: "Pause basic statistics" })
+        .click();
+      await expect(
+        page.getByText("Paused in this browser", { exact: true }),
+      ).toBeVisible();
+      await page.goto(base + "/services", { waitUntil: "networkidle" });
+      assert.equal(await pageviewCount(), baseline + 3);
+      await page.goto(base + "/privacy", { waitUntil: "networkidle" });
+      await page
+        .getByRole("button", { name: "Enable basic statistics" })
+        .click();
+      await expect.poll(pageviewCount).toBe(baseline + 4);
+      assert.ok(
+        payloads.length === 4 &&
+          payloads.every(
+            (p) =>
+              !["visitor", "session", "duration", "consent"].some(
+                (key) => key in p,
+              ),
+          ),
+      );
+      const analyticsHeaders = await Promise.all(
+        analyticsRequests.map((r) => r.allHeaders()),
+      );
+      assert.ok(analyticsHeaders.every((h) => h.cookie === undefined));
       await context.close();
+      const optedOut = await browser.newContext();
+      await optedOut.addInitScript(() => {
+        localStorage.setItem("quality-analytics-consent", "declined");
+        localStorage.setItem("quality-visitor", "old-id");
+        sessionStorage.setItem("quality-visit", "old-id");
+      });
+      const optedOutPage = await optedOut.newPage();
+      const beforeOptOut = await pageviewCount();
+      await optedOutPage.goto(base + "/privacy", { waitUntil: "networkidle" });
+      assert.equal(await pageviewCount(), beforeOptOut);
+      await expect(
+        optedOutPage.getByText("Paused in this browser", { exact: true }),
+      ).toBeVisible();
+      assert.deepEqual(
+        await optedOutPage.evaluate(() => ({
+          local: Object.keys(localStorage),
+          session: Object.keys(sessionStorage),
+        })),
+        { local: ["quality-analytics-disabled"], session: [] },
+      );
+      await optedOut.close();
       for (const privacy of ["dnt", "gpc"]) {
         const protectedContext = await browser.newContext({
           extraHTTPHeaders:
@@ -417,9 +501,16 @@ try {
         protectedPage.on("pageerror", (e) => errors.push(e.message));
         const before = await pageviewCount();
         await protectedPage.goto(base + "/privacy");
-        await protectedPage
-          .getByRole("button", { name: "Allow analytics", exact: true })
-          .click();
+        await expect(
+          protectedPage.getByText("Paused by your browser privacy setting", {
+            exact: true,
+          }),
+        ).toBeVisible();
+        await expect(
+          protectedPage.getByRole("button", {
+            name: "Enable basic statistics",
+          }),
+        ).toBeDisabled();
         await protectedPage.goto(base + "/services", {
           waitUntil: "networkidle",
         });
@@ -427,16 +518,22 @@ try {
         await protectedContext.close();
       }
       const restricted = await browser.newContext();
-      await restricted.addInitScript(() =>
-        Object.defineProperty(window, "localStorage", {
-          get() {
-            throw new DOMException("Storage disabled", "SecurityError");
-          },
-        }),
-      );
+      await restricted.addInitScript(() => {
+        for (const storage of ["localStorage", "sessionStorage"]) {
+          Object.defineProperty(window, storage, {
+            get() {
+              throw new DOMException("Storage disabled", "SecurityError");
+            },
+          });
+        }
+      });
       const restrictedPage = await restricted.newPage();
       restrictedPage.on("pageerror", (e) => errors.push(e.message));
-      await restrictedPage.goto(base + "/contact");
+      const beforeRestricted = await pageviewCount();
+      await restrictedPage.goto(base + "/contact", {
+        waitUntil: "networkidle",
+      });
+      await expect.poll(pageviewCount).toBe(beforeRestricted + 1);
       await restrictedPage
         .getByLabel("Full name")
         .fill("Restricted Storage QA");
@@ -466,7 +563,7 @@ try {
       assert.deepEqual(errors, []);
       await restricted.close();
       report.push(
-        "Live-mode browser checks passed: no traffic before consent or after decline, real pageviews after opt-in, DNT/GPC honored, and a real inquiry still saved with browser storage blocked.",
+        "Live-mode browser checks passed: automatic page counts with no popup, no analytics identifiers or cookies, SPA navigation counted once, former IDs removed and opt-outs retained, pause/resume and DNT/GPC honored, and analytics plus real inquiry storage work with browser storage blocked.",
       );
     } finally {
       await browser.close();

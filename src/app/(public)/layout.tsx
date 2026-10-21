@@ -1,6 +1,6 @@
 import { Header } from "@/components/header";
 import { Footer } from "@/components/public-shell";
-import { AnalyticsConsent } from "@/components/analytics-consent";
+import { Analytics } from "@/components/analytics";
 import { previewMode, siteUrl } from "@/lib/config";
 import { business } from "@/lib/business";
 export default function PublicLayout({
@@ -16,7 +16,7 @@ export default function PublicLayout({
       <Header />
       <main id="main">{children}</main>
       <Footer />
-      <AnalyticsConsent preview={previewMode} />
+      <Analytics preview={previewMode} />
       {!previewMode && business.approvedForLaunch && (
         <script
           type="application/ld+json"

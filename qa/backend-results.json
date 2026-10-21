@@ -1,13 +1,14 @@
 {
   "passed": true,
-  "database": "quality_qa_07607ba97b",
+  "database": "quality_qa_0d1e3d9c17",
   "checks": [
     "Origin / CSRF protection, request-size limits, malformed JSON, secure cookies, hashed sessions, protected APIs, and disabled production sample mode passed.",
     "Production quote validation, honeypot, PostgreSQL storage, and honest unconfigured-email response passed.",
-    "Consented analytics, DNT/GPC suppression, admin-path exclusion, referral sanitization, pseudonymous identifiers, engagement, and accurate 7/30/90-day PostgreSQL aggregation passed.",
+    "Aggregate pageviews without identifiers, rejection of visitor/session/engagement payloads, DNT/GPC suppression, admin-path exclusion, referral sanitization, and accurate 7/30/90-day PostgreSQL aggregation passed.",
     "Authorized inquiry status changes and CSV export with formula-injection protection passed.",
     "Logout replay rejection, server-side expiration, and credential-version invalidation passed.",
     "Application restart preserved inquiry, status, and analytics records in PostgreSQL.",
+    "Live-mode browser checks passed: automatic page counts with no popup, no analytics identifiers or cookies, SPA navigation counted once, former IDs removed and opt-outs retained, pause/resume and DNT/GPC honored, and analytics plus real inquiry storage work with browser storage blocked.",
     "Login brute-force rate limiting and atomic database rate limits passed.",
     "Optional email request format, idempotency, success, provider error, and network failure passed with mocked responses. No real email was sent; live delivery still requires credentials.",
     "Configured analytics, inquiry, and expired-security-record retention command passed in the isolated QA database."

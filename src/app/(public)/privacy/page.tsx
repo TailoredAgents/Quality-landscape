@@ -1,9 +1,9 @@
 import { SectionLabel } from "@/components/public-shell";
-import { PrivacyPreferences } from "@/components/analytics-consent";
+import { PrivacyPreferences } from "@/components/analytics";
 import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata(
   "Privacy & Preferences",
-  "How this website handles inquiry details and optional first-party website analytics.",
+  "How this website handles inquiry details and basic first-party website statistics.",
   "/privacy",
 );
 export default function Privacy() {
@@ -28,21 +28,26 @@ export default function Privacy() {
         the message. Inquiry records are retained for the configured period,
         initially 365 days, unless removed sooner by the administrator.
       </p>
-      <h2>Optional website analytics</h2>
+      <h2>Basic website statistics</h2>
       <p>
-        Optional analytics run only with your permission. They use random
-        identifiers to estimate visitors and visits, with page paths, referral
-        hostnames, campaign labels, device categories, and page engagement. Raw
-        IP addresses, full referral URLs, and your inquiry contact details are
-        not stored in traffic records. Browser Do Not Track and Global Privacy
-        Control signals are respected. Analytics events are initially retained
-        for 90 days.
+        We automatically count public pageviews to understand which pages are
+        useful. New traffic records contain the page path, referral hostname,
+        restricted campaign labels, general device category, and time. We do not
+        assign visitor or session identifiers, use analytics cookies, track
+        browsing journeys, or measure time spent on a page. Raw IP addresses,
+        full referral URLs, and inquiry contact details are not stored in
+        traffic records. Browser Do Not Track and Global Privacy Control signals
+        pause collection. Analytics events are initially retained for 90 days.
       </p>
       <h2>Your choices</h2>
       <p>
-        You can decline analytics and still use the entire website. Changing
-        your preference removes the browser identifiers used for future
-        analytics; it does not identify or remove previous anonymous events.
+        You can pause basic statistics below and still use the entire website.
+        We save only that preference in your browser; it does not identify you.
+        Earlier analytics opt-outs remain respected. Former visitor and session
+        identifiers are removed from your browser when you return. Earlier
+        permission-based records remain subject to the configured retention
+        period. Changing this preference does not remove previously recorded
+        events.
       </p>
       <PrivacyPreferences />
       <h2>Necessary security</h2>

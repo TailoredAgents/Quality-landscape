@@ -50,7 +50,7 @@ async function command(args, cwd, env) {
   return log;
 }
 console.log(
-  "Building an isolated live-mode copy for consent and privacy browser checks. The presentation build stays unchanged.",
+  "Building an isolated live-mode copy for aggregate analytics and privacy browser checks. The presentation build stays unchanged.",
 );
 await command(
   ["node_modules/next/dist/bin/next", "build", "--webpack"],

@@ -7,7 +7,6 @@ export async function realDashboard(days: number): Promise<DashboardData> {
     quoteRows,
     daily,
     pageRows,
-    landings,
     sources,
     devices,
     campaigns,
@@ -17,27 +16,20 @@ export async function realDashboard(days: number): Promise<DashboardData> {
   ] = await Promise.all([
     query<{
       pageviews: number;
-      visitors: number;
-      sessions: number;
-      engagement: number;
     }>(
-      `SELECT (count(*) FILTER(WHERE kind='pageview'))::int pageviews,(count(DISTINCT visitor_hash) FILTER(WHERE kind='pageview'))::int visitors,(count(DISTINCT session_hash) FILTER(WHERE kind='pageview'))::int sessions,coalesce(round(avg(duration) FILTER(WHERE kind='engagement')),0)::int engagement FROM analytics_events WHERE ${where}`,
+      `SELECT count(*)::int pageviews FROM analytics_events WHERE ${where} AND kind='pageview'`,
       [days],
     ),
     query<{ count: number }>(
       `SELECT count(*)::int count FROM inquiries WHERE ${where}`,
       [days],
     ),
-    query<{ date: string; pageviews: number; visitors: number }>(
-      `SELECT to_char(created_at AT TIME ZONE 'America/New_York','YYYY-MM-DD') date,count(*)::int pageviews,count(DISTINCT visitor_hash)::int visitors FROM analytics_events WHERE ${where} AND kind='pageview' GROUP BY 1 ORDER BY 1`,
+    query<{ date: string; pageviews: number }>(
+      `SELECT to_char(created_at AT TIME ZONE 'America/New_York','YYYY-MM-DD') date,count(*)::int pageviews FROM analytics_events WHERE ${where} AND kind='pageview' GROUP BY 1 ORDER BY 1`,
       [days],
     ),
     query<Breakdown>(
       `SELECT path name,count(*)::int value FROM analytics_events WHERE ${where} AND kind='pageview' GROUP BY path ORDER BY value DESC LIMIT 10`,
-      [days],
-    ),
-    query<Breakdown>(
-      `SELECT path name,count(*)::int value FROM (SELECT DISTINCT ON(session_hash) session_hash,path,created_at FROM analytics_events WHERE kind='pageview' AND session_hash IS NOT NULL ORDER BY session_hash,created_at) landings WHERE ${where} GROUP BY path ORDER BY value DESC LIMIT 10`,
       [days],
     ),
     query<Breakdown>(
@@ -68,9 +60,6 @@ export async function realDashboard(days: number): Promise<DashboardData> {
   const metrics = {
     ...metricRows[0],
     quotes: quoteRows[0].count,
-    conversion: metricRows[0].visitors
-      ? (quoteRows[0].count / metricRows[0].visitors) * 100
-      : 0,
   };
   const dates = Array.from({ length: days }, (_, i) => {
     const date = new Date();
@@ -81,7 +70,6 @@ export async function realDashboard(days: number): Promise<DashboardData> {
     return {
       date: key,
       pageviews: daily.find((d) => d.date === key)?.pageviews || 0,
-      visitors: daily.find((d) => d.date === key)?.visitors || 0,
       quotes: quoteDaily.find((d) => d.date === key)?.quotes || 0,
     };
   });
@@ -91,7 +79,6 @@ export async function realDashboard(days: number): Promise<DashboardData> {
     metrics,
     daily: dates,
     pages: pageRows,
-    landingPages: landings,
     sources,
     devices,
     campaigns,

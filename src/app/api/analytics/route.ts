@@ -4,13 +4,7 @@ import {
   referralSource,
   safeCampaign,
 } from "@/lib/validation";
-import {
-  assertOrigin,
-  readJson,
-  rateLimit,
-  clientKey,
-  digest,
-} from "@/lib/security";
+import { assertOrigin, readJson, rateLimit, clientKey } from "@/lib/security";
 import { query } from "@/lib/db";
 export async function POST(request: Request) {
   if (
@@ -26,18 +20,15 @@ export async function POST(request: Request) {
     await rateLimit(`event:${clientKey(request)}`, 180, 60);
     const e = data.data;
     await query(
-      "INSERT INTO analytics_events(kind,path,visitor_hash,session_hash,source,utm_source,utm_medium,utm_campaign,device,duration) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+      "INSERT INTO analytics_events(kind,path,source,utm_source,utm_medium,utm_campaign,device) VALUES($1,$2,$3,$4,$5,$6,$7)",
       [
         e.kind,
         e.path,
-        digest(`visitor:${e.visitor}`),
-        digest(`session:${e.session}`),
         referralSource(e.referrer, new URL(siteUrl).origin),
         safeCampaign(e.utmSource),
         safeCampaign(e.utmMedium),
         safeCampaign(e.utmCampaign),
         e.device,
-        e.duration || null,
       ],
     );
     return new Response(null, { status: 204 });

@@ -126,14 +126,13 @@ There is no fake booking or pricing engine. Estimate submission does not confirm
 
 ## Analytics and privacy
 
-- Public traffic collection begins only after analytics consent. Declining leaves all website features available.
+- Basic first-party page counts run automatically without a popup, analytics cookies, or visitor/session identifiers. Privacy & preferences provides a pause/resume control; its optional browser preference contains no identifier. Earlier opt-outs remain respected and legacy browser identifiers are removed on return.
 - Browser Do Not Track and Global Privacy Control suppress collection on both client and server. Admin pages are excluded by the public layout and endpoint path allowlist.
-- Random browser IDs expire after 90 days. Sessions roll over after 30 minutes of inactivity. Browser IDs and session IDs are HMAC-hashed before PostgreSQL storage.
-- Traffic stores only allowed public page paths, referral hostnames, restricted UTM labels, broad screen categories, timestamps, and bounded engagement durations. No raw IP, contact data, full referrer URL, or query string is stored in traffic rows. Never put personal information in campaign labels.
+- New traffic events store only allowed public page paths, referral hostnames, restricted UTM labels, broad screen categories, and timestamps. No raw IP, visitor/session identifier, contact data, full referrer URL, query string, or engagement duration is stored in new traffic rows. Analytics requests omit cookies. Never put personal information in campaign labels.
+- Historical consent-based rows remain under the existing retention policy. The schema retains nullable legacy columns for compatibility, but the collector no longer populates them or accepts identifier/engagement payloads. There is no fingerprinting or IP-derived visitor counting; short-lived rate-limit hashes remain separate security data.
 - Inquiry contact details are stored separately. No browser identifier is attached to an inquiry.
-- Pageviews count consenting browser activity. Visitors and visits are estimates, not identified people. Sources and devices represent shares of pageviews, explicitly labeled in the interface.
-- Inquiry conversion is all saved inquiries divided by consenting visitor estimates, so it can exceed 100%. With no visitors, the UI displays a dash. It is not a guaranteed or person-level conversion rate.
-- Engagement is the first visibility change or navigation away from a page, capped at 30 minutes. It is an approximate engaged-page measure, not exact attention tracking.
+- Pageviews count loads and route navigation, including repeat views. Blockers and privacy preferences can reduce counts; bots may inflate them. Sources and devices represent shares of pageviews. Unique visitors, sessions, landing journeys, time on page, and person-level conversion rates are not measured or displayed in either real or sample mode.
+- Dashboard highlights total pageviews, active pages, mobile pageviews, and all saved quote requests, alongside daily activity, popular pages, sources, devices, campaigns, and inquiries. Saved inquiries are the confirmed conversion count, without attributing them to a person or browsing journey.
 - Dates and report ranges use America/New_York. The real 7/30/90-day controls query persisted data. The inquiry list caps at 500 latest records; CSV exports all records in the selected range.
 - Analytics failures are swallowed and never block public navigation or estimate storage. Browser storage failures are handled safely.
 
@@ -186,7 +185,7 @@ npm run build
 npm run test:browser
 # With a completed production build and local PostgreSQL:
 node node_modules/tsx/dist/cli.mjs scripts/test-backend.ts
-# Includes an isolated live build and browser consent/privacy checks:
+# Includes an isolated live build and aggregate analytics/privacy checks:
 node scripts/test-live-browser.mjs
 ```
 
@@ -194,7 +193,7 @@ Browser tests use Chromium, Playwright, and axe-core. Install Chromium if needed
 
 The backend integration command creates an isolated `quality_qa_<random>` database on the local PostgreSQL instance, runs a production Next.js server on port 3108, and verifies real writes, aggregation, authorization, cookie flags, logout, expiration, credential invalidation, status changes, CSV formula protection, rate limits, and persistence through process restart. It does not touch the presentation database's inquiry/analytics tables or send email. The isolated QA database is retained for inspection; its name is recorded in `qa/backend-results.json`.
 
-The live-browser helper also prepares a separate source/build copy under ignored `.data`, so it can verify consent, decline, DNT, GPC, and storage-disabled inquiry behavior with `PREVIEW_MODE=false` without changing the presentation build. Optional email success/failure handling is tested with mocked provider responses; no real delivery is implied.
+The live-browser helper also prepares a separate source/build copy under ignored `.data`, so it can verify automatic page counts, popup removal, identifier cleanup, earlier opt-outs, pause/resume, DNT/GPC, cookie omission, and storage-disabled analytics/inquiry behavior with `PREVIEW_MODE=false` without changing the presentation build. Optional email success/failure handling is tested with mocked provider responses; no real delivery is implied.
 
 Visual evidence is in `qa/screenshots` (local ignored captures); the final `qa/TESTING.md` describes what was inspected and what remains unverified. Screenshot helpers cover 375, 430, 768, and 1440 pixels and all five public pages, plus login and dashboard views.
 

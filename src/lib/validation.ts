@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { services } from "./business";
+import { publicPaths } from "./analytics-settings";
+export { publicPaths, safeCampaign } from "./analytics-settings";
 const clean = (max: number) =>
   z.string().trim().min(2, "Please enter at least 2 characters.").max(max);
 export const quoteSchema = z.object({
@@ -34,30 +36,15 @@ export const quoteSchema = z.object({
   }),
   website: z.string().max(0).optional(),
 });
-export const publicPaths = [
-  "/",
-  "/services",
-  "/our-work",
-  "/about",
-  "/contact",
-  "/privacy",
-];
-export const analyticsSchema = z.object({
-  consent: z.literal("accepted"),
-  kind: z.enum(["pageview", "engagement"]),
+export const analyticsSchema = z.strictObject({
+  kind: z.literal("pageview"),
   path: z.enum(publicPaths as [string, ...string[]]),
-  visitor: z.uuid(),
-  session: z.uuid(),
   referrer: z.string().max(2048).default(""),
   utmSource: z.string().max(80).default(""),
   utmMedium: z.string().max(80).default(""),
   utmCampaign: z.string().max(120).default(""),
   device: z.enum(["mobile", "tablet", "desktop"]),
-  duration: z.number().int().min(0).max(1800).optional(),
 });
-export function safeCampaign(value: string) {
-  return /^[\w .-]{1,120}$/.test(value) && !/@|\d{7,}/.test(value) ? value : "";
-}
 export function referralSource(referrer: string, ownOrigin: string) {
   try {
     const url = new URL(referrer);

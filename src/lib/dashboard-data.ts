@@ -16,20 +16,14 @@ export type DashboardData = {
   days: number;
   metrics: {
     pageviews: number;
-    visitors: number;
-    sessions: number;
     quotes: number;
-    conversion: number;
-    engagement: number;
   };
   daily: {
     date: string;
     pageviews: number;
-    visitors: number;
     quotes: number;
   }[];
   pages: Breakdown[];
-  landingPages: Breakdown[];
   sources: Breakdown[];
   devices: Breakdown[];
   campaigns: Breakdown[];
@@ -76,19 +70,16 @@ export function sampleDashboard(days: number): DashboardData {
   const daily = Array.from({ length: days }, (_, i) => {
     const date = new Date();
     date.setUTCDate(date.getUTCDate() - days + 1 + i);
-    const visitors = Math.round(
+    const activity = Math.round(
       25 + i * 0.16 + Math.sin(i * 1.8) * 7 + (i % 7 < 5 ? 10 : 0),
     );
     return {
       date: date.toLocaleDateString("en-CA", { timeZone: "America/New_York" }),
-      pageviews: Math.round(visitors * 2.45),
-      visitors,
+      pageviews: Math.round(activity * 2.45),
       quotes: i % 3 === 0 ? 2 : i % 5 === 0 ? 1 : 0,
     };
   });
   const pageviews = daily.reduce((n, d) => n + d.pageviews, 0);
-  const visitors = Math.round(daily.reduce((n, d) => n + d.visitors, 0) * 0.82);
-  const sessions = Math.round(visitors * 1.2);
   const quotes = daily.reduce((n, d) => n + d.quotes, 0);
   const distribute = (names: string[], weights: number[], total: number) =>
     names.map((name, i) => ({ name, value: Math.round(total * weights[i]) }));
@@ -130,22 +121,13 @@ export function sampleDashboard(days: number): DashboardData {
     days,
     metrics: {
       pageviews,
-      visitors,
-      sessions,
       quotes,
-      conversion: visitors ? (quotes / visitors) * 100 : 0,
-      engagement: 64,
     },
     daily,
     pages: distribute(
       ["/", "/services", "/our-work", "/contact", "/about"],
       [0.4, 0.24, 0.17, 0.12, 0.07],
       pageviews,
-    ),
-    landingPages: distribute(
-      ["/", "/services", "/our-work", "/contact", "/about"],
-      [0.65, 0.17, 0.08, 0.07, 0.03],
-      sessions,
     ),
     sources: distribute(
       ["Google", "Direct", "Facebook", "Other referrals"],

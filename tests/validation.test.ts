@@ -59,15 +59,29 @@ test("admin and arbitrary URL paths cannot become public traffic records", () =>
   ])
     assert.equal(
       analyticsSchema.safeParse({
-        consent: "accepted",
         kind: "pageview",
         path,
-        visitor: crypto.randomUUID(),
-        session: crypto.randomUUID(),
         device: "desktop",
       }).success,
       false,
     );
+});
+
+test("aggregate analytics rejects identifiers and engagement tracking", () => {
+  const event = { kind: "pageview", path: "/", device: "mobile" };
+  assert.equal(analyticsSchema.safeParse(event).success, true);
+  for (const change of [
+    { visitor: crypto.randomUUID() },
+    { session: crypto.randomUUID() },
+    { consent: "accepted" },
+    { kind: "engagement", duration: 18 },
+    { email: "private@example.com" },
+  ]) {
+    assert.equal(
+      analyticsSchema.safeParse({ ...event, ...change }).success,
+      false,
+    );
+  }
 });
 test("CSV prevents formula injection and escapes delimiters", () => {
   assert.equal(csvEscape("=CMD()"), '"\'=CMD()"');

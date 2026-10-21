@@ -1582,41 +1582,7 @@ img {
 .privacy-preferences .button {
   font-size: 11px;
 }
-.consent-banner {
-  position: fixed;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(900px, calc(100% - 32px));
-  background: var(--ivory);
-  padding: 22px;
-  border: 1px solid var(--line);
-  box-shadow: 0 8px 50px #0c211c40;
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.consent-banner > div {
-  margin-right: auto;
-  max-width: 470px;
-}
-.consent-banner strong {
-  font: 400 20px var(--serif);
-}
-.consent-banner p {
-  font-size: 10px;
-  margin-top: 5px;
-}
-.consent-banner a {
-  text-decoration: underline;
-}
-.consent-banner .button {
-  white-space: nowrap;
-  font-size: 10px;
-  padding: 12px 18px;
-  min-height: 44px;
-}
+
 .not-found {
   padding: 15vh 24px;
   text-align: center;
@@ -2647,21 +2613,7 @@ img {
     font-size: 27px;
     margin-top: 35px;
   }
-  .consent-banner {
-    flex-wrap: wrap;
-    padding: 18px;
-    bottom: 12px;
-  }
-  .consent-banner > div {
-    width: 100%;
-    max-width: none;
-  }
-  .consent-banner .button {
-    flex: 1;
-  }
-  .consent-banner strong {
-    font-size: 21px;
-  }
+
   .not-found h1 {
     font-size: 50px;
   }
@@ -3046,5 +2998,9 @@ img {
   }
   .privacy-preferences p {
     font-size: 14px;
+  }
+  .privacy-preferences .button {
+    font-size: 14px;
+    width: 100%;
   }
 }
